@@ -1,25 +1,32 @@
 
 // Java imports
+import java.util.HashMap;
 import java.util.Random;
 
 // Visidia imports
 import visidia.simulation.process.algorithm.Algorithm;
 import visidia.simulation.process.messages.Door;
+import visidia.stats.VisidiaStat;
 
 public class RicartAgrawala extends Algorithm {
     // All nodes data
-    int procId;
+    private int procId;
+    private int h;
+    private int hSC;
+    private int nbProcs;
+    private HashMap<Integer, Integer> waiting;
+
     // Higher speed means lower simulation speed
-    int speed = 4;
+    private int speed = 4;
 
     // To display the state
-    boolean waitForCritical = false;
-    boolean inCritical = false;
+    private boolean waitForCritical = false;
+    private boolean inCritical = false;
 
     // Critical section thread
-    ReceptionRules rr = null;
+    private ReceptionRules rr = null;
     // State display frame
-    DisplayFrame df;
+    private DisplayFrame df;
 
     public String getDescription() {
         return ("Ricart-Agrawala Algorithm for Mutual Exclusion");
@@ -37,6 +44,11 @@ public class RicartAgrawala extends Algorithm {
     public void init() {
         procId = getId();
         Random rand = new Random(procId);
+
+        h = 0;
+        hSC = 0;
+        nbProcs = getNetSize();
+        waiting = new HashMap<Integer, Integer>(nbProcs);
 
         rr = new ReceptionRules(this);
         rr.start();
