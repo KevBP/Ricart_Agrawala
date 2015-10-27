@@ -1,12 +1,11 @@
+// Visidia imports
+import visidia.simulation.process.algorithm.Algorithm;
+import visidia.simulation.process.messages.Door;
+import visidia.simulation.process.messages.Message;
 
 // Java imports
 import java.util.HashMap;
 import java.util.Random;
-
-// Visidia imports
-import visidia.simulation.process.algorithm.Algorithm;
-import visidia.simulation.process.messages.Door;
-import visidia.stats.VisidiaStat;
 
 public class RicartAgrawala extends Algorithm {
     // All nodes data
@@ -105,12 +104,12 @@ public class RicartAgrawala extends Algorithm {
     }
 
     // Rule 2 : receive REQ from d
-    synchronized void receiveREQ(int d) {
+    synchronized void receiveREQ(int d, int hd) {
         // TODO
     }
 
     // Rule 3 : receive REL from d
-    synchronized void receiveREL() {
+    synchronized void receiveREL(int d) {
         // TODO
     }
 
@@ -120,10 +119,8 @@ public class RicartAgrawala extends Algorithm {
     }
 
     // Access to receive function
-    public SyncMessage recoit(Door d) {
-
-        SyncMessage sm = (SyncMessage) receive(d);
-        return sm;
+    public Message recoit(Door d) {
+        return receive(d);
     }
 
     // Display state

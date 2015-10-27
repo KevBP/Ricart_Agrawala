@@ -1,6 +1,8 @@
-
+import Message.NetMessage;
+import Message.REQMessage;
 // Visidia imports
 import visidia.simulation.process.messages.Door;
+import visidia.simulation.process.messages.Message;
 
 // Reception thread
 public class ReceptionRules extends Thread {
@@ -18,17 +20,17 @@ public class ReceptionRules extends Thread {
 
         while (true) {
 
-            SyncMessage m = (SyncMessage) algo.recoit(d);
+            Message m = algo.recoit(d);
             int door = d.getNum();
 
-            switch (m.getMsgType()) {
+            switch (((NetMessage) m).getMsgType()) {
 
                 case REQ:
-                    algo.receiveREQ(door);
+                    algo.receiveREQ(door, ((REQMessage) m).getH());
                     break;
 
                 case REL:
-                    algo.receiveREL();
+                    algo.receiveREL(door);
                     break;
 
                 default:
