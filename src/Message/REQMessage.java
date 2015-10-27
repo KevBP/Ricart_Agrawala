@@ -7,8 +7,9 @@ public class REQMessage extends NetMessage {
     private MsgType type;
     private int h;
 
-    public REQMessage(MsgType t) {
+    public REQMessage(MsgType t, int h) {
         type = t;
+        this.h = h;
     }
 
     @Override
@@ -18,7 +19,7 @@ public class REQMessage extends NetMessage {
 
     @Override
     public Message clone() {
-        return new REQMessage(type);
+        return new REQMessage(type, h);
     }
 
     @Override

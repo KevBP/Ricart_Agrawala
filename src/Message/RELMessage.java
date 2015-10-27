@@ -17,7 +17,7 @@ public class RELMessage extends NetMessage {
 
     @Override
     public Message clone() {
-        return new REQMessage(type);
+        return new RELMessage(type);
     }
 
     @Override

@@ -4,8 +4,11 @@ import visidia.simulation.process.messages.Door;
 import visidia.simulation.process.messages.Message;
 
 // Java imports
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+
+import Message.*;
 
 public class RicartAgrawala extends Algorithm {
     // All nodes data
@@ -13,7 +16,7 @@ public class RicartAgrawala extends Algorithm {
     private int h;
     private int hSC;
     private int nbProcs;
-    private HashMap<Integer, Integer> waiting;
+    private List<Integer> waiting;
 
     // Higher speed means lower simulation speed
     private int speed = 4;
@@ -46,8 +49,7 @@ public class RicartAgrawala extends Algorithm {
 
         h = 0;
         hSC = 0;
-        nbProcs = getNetSize();
-        waiting = new HashMap<Integer, Integer>(nbProcs);
+        waiting = new LinkedList<Integer>();
 
         rr = new ReceptionRules(this);
         rr.start();
@@ -70,7 +72,6 @@ public class RicartAgrawala extends Algorithm {
             }
 
             // Try to access critical section
-            waitForCritical = true;
             askForCritical();
 
             // Access critical
@@ -89,7 +90,6 @@ public class RicartAgrawala extends Algorithm {
             System.out.println("Process " + procId + " exit SC ");
 
             // Release critical use
-            inCritical = false;
             endCriticalUse();
         }
     }
@@ -100,22 +100,52 @@ public class RicartAgrawala extends Algorithm {
 
     // Rule 1 : ask for critical section
     synchronized void askForCritical() {
-        // TODO
+        waitForCritical = true;
+        hSC = h + 1;
+        nbProcs = getArity();
+        REQMessage msg = new REQMessage(MsgType.REQ, hSC);
+        sendAll(msg);
+        System.out.println(procId + " - Ask for critical to all");
+        while (nbProcs != 0) {
+            displayState();
+            try {
+                this.wait();
+            } catch( InterruptedException ie) {}
+        }
     }
 
     // Rule 2 : receive REQ from d
-    synchronized void receiveREQ(int d, int hd) {
-        // TODO
+    void receiveREQ(int d, int hd) {
+        h = Math.max(h, hd);
+        if (waitForCritical && ((hSC < hd) || ((hSC == hd) && procId < d))) {
+            waiting.add(d);
+            System.out.println(procId + " - Receive REQ from " + d + ", add to waiting list " + d);
+        }
+        else {
+            RELMessage msg = new RELMessage(MsgType.REL);
+            sendTo(d, msg);
+            System.out.println(procId + " - Receive REQ from " + d + ", send REL to " + d);
+        }
     }
 
     // Rule 3 : receive REL from d
     synchronized void receiveREL(int d) {
-        // TODO
+        nbProcs--;
+        System.out.println(procId + " - ReceiveREL from " + d + ", nbProcs = " + nbProcs);
+        if (nbProcs == 0) {
+            notify();
+        }
     }
 
     // Rule 4
     void endCriticalUse() {
-        // TODO
+        inCritical = false;
+        RELMessage msg = new RELMessage(MsgType.REL);
+        for (int node : waiting) {
+            sendTo(node, msg);
+        }
+        waiting.clear();
+        displayState();
     }
 
     // Access to receive function
