@@ -1,21 +1,23 @@
+package Message;
 
 import visidia.simulation.process.messages.Message;
 
-public class SyncMessage extends Message {
+public class RELMessage extends NetMessage {
 
     private MsgType type;
 
-    public SyncMessage(MsgType t) {
+    public RELMessage(MsgType t) {
         type = t;
     }
 
+    @Override
     public MsgType getMsgType() {
         return type;
     }
 
     @Override
     public Message clone() {
-        return new SyncMessage(type);
+        return new REQMessage(type);
     }
 
     @Override
